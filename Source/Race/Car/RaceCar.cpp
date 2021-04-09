@@ -11,6 +11,9 @@ ARaceCar::ARaceCar()
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	Box->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	RootComponent = Box;
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComponent->SetupAttachment(Box);
+
 }
 
 void ARaceCar::BeginPlay()
