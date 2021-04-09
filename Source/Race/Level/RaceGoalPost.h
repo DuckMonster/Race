@@ -2,6 +2,7 @@
 #include "GameFramework/Actor.h"
 #include "RaceGoalPost.generated.h"
 class UBoxComponent;
+class ARaceCheckpoint;
 
 UCLASS()
 class ARaceGoalPost : public AActor

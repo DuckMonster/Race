@@ -40,8 +40,6 @@ public:
 	TSet<ARaceCheckpoint*> PassedCheckpoints;
 	int LapsFinished = 0;
 
-	float RaceBeginTime;
-
 private:
 	void HandleThrottleInput(float Value);
 	void HandleTurnRightInput(float Value);

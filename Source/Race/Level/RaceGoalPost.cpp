@@ -1,6 +1,10 @@
 #include "RaceGoalPost.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Car/RaceCar.h"
+#include "RaceCheckpoint.h"
+#include "RaceGameModeBase.h"
+#include "Widget/RacePlayerStatusWidget.h"
 
 ARaceGoalPost::ARaceGoalPost()
 {
@@ -11,8 +15,22 @@ ARaceGoalPost::ARaceGoalPost()
 
 void ARaceGoalPost::HandleGoalOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHit)
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.f, FColor::Red, TEXT("You goaled!"));
+	auto Car = Cast<ARaceCar>(OtherActor);
+	if (!Car)
+		return;
 
-	FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-	UGameplayStatics::OpenLevel(this, *LevelName, false, TEXT(""));
+	auto GameMode = Cast<ARaceGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (Car->PassedCheckpoints.Num() != GameMode->NumCheckpoints)
+		return;
+
+	Car->PassedCheckpoints.Empty();
+	Car->StatusWidget->SetCheckpointsPassed(0);
+
+	Car->LapsFinished++;
+
+	if (Car->LapsFinished >= GameMode->NumLaps)
+	{
+		FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+		UGameplayStatics::OpenLevel(this, *LevelName, false, TEXT(""));
+	}
 }
