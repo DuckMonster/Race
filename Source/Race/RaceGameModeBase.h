@@ -12,6 +12,11 @@ class RACE_API ARaceGameModeBase : public AGameModeBase
 public:
 	void StartPlay() override;
 
+	int NumCheckpoints;
+
+	UPROPERTY(Category="Race", EditDefaultsOnly)
+	int NumLaps = 3;
+
 	UPROPERTY(Category="HUD", EditDefaultsOnly)
 	TSubclassOf<URaceHudWidget> WidgetClass;
 	URaceHudWidget* HudWidget;

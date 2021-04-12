@@ -16,7 +16,4 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetTotalCheckpointNum(int TotalCheckpointNum);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetRaceBeginTime(float BeginTime);
 };

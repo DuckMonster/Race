@@ -1,6 +1,4 @@
 #pragma once
-#include "Camera/CameraComponent.h"
-
 #include "GameFramework/Pawn.h"
 #include "RaceCar.generated.h"
 class UBoxComponent;
@@ -8,26 +6,21 @@ class URacePlayerStatusWidget;
 class ARaceCheckpoint;
 
 UCLASS()
-class ARaceCar : public APawn {
+class ARaceCar : public APawn
+{
 	GENERATED_BODY()
 
 public:
 	ARaceCar();
 	void BeginPlay() override;
-	void SetupPlayerInputComponent( UInputComponent* PlayerInputComponent ) override;
-	void PossessedBy( AController* NewController ) override;
+	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	void PossessedBy(AController* NewController) override;
 
-	void Tick( float DeltaTime );
+	void Tick(float DeltaTime);
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Box;
 
-	UPROPERTY(VisibleAnywhere)
-	APlayerCameraManager* PlayerCameraManager;
-
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComponent;
-	
 	UPROPERTY(Category = "Car Physics", EditAnywhere)
 	float AccelerationStrength = 200.f;
 
@@ -47,11 +40,9 @@ public:
 	TSet<ARaceCheckpoint*> PassedCheckpoints;
 	int LapsFinished = 0;
 
-	float RaceBeginTime;
-
 private:
-	void HandleThrottleInput( float Value );
-	void HandleTurnRightInput( float Value );
+	void HandleThrottleInput(float Value);
+	void HandleTurnRightInput(float Value);
 
 	void HandleBoostPressed();
 	void HandleBoostReleased();
