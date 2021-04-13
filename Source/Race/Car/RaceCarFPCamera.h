@@ -19,4 +19,5 @@ class RACE_API URaceCarFPCamera : public UCameraComponent {
 	UFUNCTION(BlueprintCallable)
 	void RotateWithPlayer();
 
+
 };

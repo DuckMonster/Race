@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Camera/CameraComponent.h"
 
 #include "GameFramework/Pawn.h"
@@ -6,6 +7,7 @@
 class UBoxComponent;
 class URacePlayerStatusWidget;
 class ARaceCheckpoint;
+class AIComponent;
 
 UCLASS()
 class ARaceCar : public APawn {
@@ -13,21 +15,22 @@ class ARaceCar : public APawn {
 
 public:
 	ARaceCar();
-	void BeginPlay() override;
-	void SetupPlayerInputComponent( UInputComponent* PlayerInputComponent ) override;
-	void PossessedBy( AController* NewController ) override;
+	virtual void BeginPlay() override;
+	virtual void SetupPlayerInputComponent( UInputComponent* PlayerInputComponent ) override;
+	virtual void PossessedBy( AController* NewController ) override;
+	void Move( float DeltaTime );
 
-	void Tick( float DeltaTime );
+	virtual void Tick( float DeltaTime ) override;
+
+	UPROPERTY(EditDefaultsOnly)
+	ACameraActor* CameraActor;
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Box;
 
 	UPROPERTY(VisibleAnywhere)
-	APlayerCameraManager* PlayerCameraManager;
-
-	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComponent;
-	
+
 	UPROPERTY(Category = "Car Physics", EditAnywhere)
 	float AccelerationStrength = 200.f;
 
@@ -40,7 +43,7 @@ public:
 	float BoostTime = 2.f;
 	bool bIsBoosting = false;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	URacePlayerStatusWidget* StatusWidget;
 
 	UPROPERTY()
@@ -48,6 +51,8 @@ public:
 	int LapsFinished = 0;
 
 	float RaceBeginTime;
+	FVector Velocity;
+
 
 private:
 	void HandleThrottleInput( float Value );
@@ -56,8 +61,10 @@ private:
 	void HandleBoostPressed();
 	void HandleBoostReleased();
 
+	void HandleSwitchCameraInput();
+
 	float ThrottleInput;
 	float TurnRightInput;
 
-	FVector Velocity;
+
 };

@@ -28,7 +28,8 @@ void ABoostRefill::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (Player)
 	{
 		Player->BoostTime = 2.f;
-		APlayerController* PlayerController = Player->GetController()->CastToPlayerController();
+		APlayerController* PlayerController;
+		PlayerController = Player->GetController()->CastToPlayerController();
 		int PlayerID = UGameplayStatics::GetPlayerControllerID(PlayerController);
 
 		if (DecalComp)

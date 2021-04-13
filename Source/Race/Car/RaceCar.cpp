@@ -1,23 +1,25 @@
 #include "RaceCar.h"
+
+#include "Camera/CameraActor.h"
+
 #include "Components/BoxComponent.h"
 #include "Race/RaceGameModeBase.h"
 #include "Race/Widget/RaceHudWidget.h"
 #include "Race/Widget/RacePlayerStatusWidget.h"
 #include "Kismet/GameplayStatics.h"
 
-ARaceCar::ARaceCar()
-{
+ARaceCar::ARaceCar(){
 	PrimaryActorTick.bCanEverTick = true;
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	Box->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	RootComponent = Box;
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComponent->SetupAttachment(Box);
+	CameraComponent->SetActive(false);
 
 }
 
-void ARaceCar::BeginPlay()
-{
+void ARaceCar::BeginPlay(){
 	Super::BeginPlay();
 
 	auto* GameMode = Cast<ARaceGameModeBase>(UGameplayStatics::GetGameMode(this));
@@ -26,33 +28,35 @@ void ARaceCar::BeginPlay()
 
 	RaceBeginTime = GetWorld()->TimeSeconds;
 	StatusWidget->SetRaceBeginTime(RaceBeginTime);
+
 }
 
-void ARaceCar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void ARaceCar::SetupPlayerInputComponent( UInputComponent* PlayerInputComponent ){
+
 	PlayerInputComponent->BindAxis(TEXT("Throttle"), this, &ARaceCar::HandleThrottleInput);
 	PlayerInputComponent->BindAxis(TEXT("TurnRight"), this, &ARaceCar::HandleTurnRightInput);
 	PlayerInputComponent->BindAction(TEXT("Boost"), IE_Pressed, this, &ARaceCar::HandleBoostPressed);
 	PlayerInputComponent->BindAction(TEXT("Boost"), IE_Released, this, &ARaceCar::HandleBoostReleased);
+	PlayerInputComponent->BindAction(TEXT("CameraSwitch"), IE_Pressed, this, &ARaceCar::HandleSwitchCameraInput);
+
 }
 
-void ARaceCar::PossessedBy(AController* NewController)
-{
+void ARaceCar::PossessedBy( AController* NewController ){
+
 	Super::PossessedBy(NewController);
+
 }
 
-void ARaceCar::Tick(float DeltaTime)
-{
+void ARaceCar::Move( float DeltaTime ){
 	FVector Acceleration = GetActorForwardVector() * ThrottleInput * AccelerationStrength;
-	if (bIsBoosting && BoostTime > 0.f)
-	{
+	if ( bIsBoosting && BoostTime > 0.f ){
 		Acceleration = GetActorForwardVector() * AccelerationStrength * 3.f;
 		BoostTime -= DeltaTime;
 	}
 
 	StatusWidget->SetBoostPercent(BoostTime / 2.f);
 
-	FVector Gravity = FVector::UpVector * -100.f;
+	FVector Gravity = FVector::UpVector * -980.f;
 
 	FVector ParallelVelocity = FVector::DotProduct(Velocity, GetActorForwardVector()) * GetActorForwardVector();
 	FVector PerpendicularVelocity = FVector::DotProduct(Velocity, GetActorRightVector()) * GetActorRightVector();
@@ -67,20 +71,17 @@ void ARaceCar::Tick(float DeltaTime)
 	int IterationCount = 0;
 
 	FVector DeltaToMove = Velocity * DeltaTime;
-	while(!DeltaToMove.IsNearlyZero() && ++IterationCount < MaxIterations)
-	{
+	while ( !DeltaToMove.IsNearlyZero() && ++IterationCount < MaxIterations ){
 		FHitResult Hit;
 		AddActorWorldOffset(DeltaToMove, true, &Hit);
 		DeltaToMove -= DeltaToMove * Hit.Time;
 
 		// Collision handling!
-		if (Hit.bBlockingHit)
-		{
-			if (Hit.bStartPenetrating)
-			{
+		if ( Hit.bBlockingHit ){
+			if ( Hit.bStartPenetrating ){
 				FVector DepenVector = Hit.Normal * (Hit.PenetrationDepth + 0.1f);
 				AddActorWorldOffset(DepenVector);
-				
+
 			}
 
 			FVector ImpactVelocity = FVector::DotProduct(Velocity, Hit.Normal) * Hit.Normal;
@@ -89,29 +90,47 @@ void ARaceCar::Tick(float DeltaTime)
 		}
 	}
 
-	ensure(IterationCount < MaxIterations);
+	//ensure(IterationCount < MaxIterations);
 
 	// Steering
 	float ParallelSpeed = FVector::DotProduct(Velocity, GetActorForwardVector()) / 100.f;
 	AddActorWorldRotation(FRotator(0.f, 90.f * ParallelSpeed * TurnRightInput * DeltaTime, 0.f));
 }
 
-void ARaceCar::HandleThrottleInput(float Value)
-{
+void ARaceCar::Tick( float DeltaTime ){
+
+
+
+	Move(DeltaTime);
+
+
+}
+
+void ARaceCar::HandleThrottleInput( float Value ){
 	ThrottleInput = Value;
 }
 
-void ARaceCar::HandleTurnRightInput(float Value)
-{
+void ARaceCar::HandleTurnRightInput( float Value ){
 	TurnRightInput = Value;
 }
 
-void ARaceCar::HandleBoostPressed()
-{
+void ARaceCar::HandleBoostPressed(){
 	bIsBoosting = true;
 }
 
-void ARaceCar::HandleBoostReleased()
-{
+void ARaceCar::HandleBoostReleased(){
 	bIsBoosting = false;
+}
+void ARaceCar::HandleSwitchCameraInput(){
+	CameraComponent->ToggleActive();
+	APlayerController* PlayerController = GetController()->CastToPlayerController();
+
+	if ( CameraComponent->IsActive() ){
+		PlayerController->SetViewTarget(this);
+	}
+	else{
+		PlayerController->SetViewTarget(CameraActor);
+
+	}
+
 }

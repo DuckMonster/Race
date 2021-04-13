@@ -16,7 +16,9 @@ public:
 
 	UPROPERTY(Category="Race", EditDefaultsOnly)
 	int NumLaps = 3;
-
+	UPROPERTY()
+	TArray<AActor*> Checkpoints;
+	
 	UPROPERTY(Category="HUD", EditDefaultsOnly)
 	TSubclassOf<URaceHudWidget> WidgetClass;
 	URaceHudWidget* HudWidget;

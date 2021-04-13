@@ -10,7 +10,7 @@ void ARaceGameModeBase::StartPlay()
 	HudWidget->AddToViewport();
 
 	// Count number of checkpoints
-	TArray<AActor*> Checkpoints;
+
 	UGameplayStatics::GetAllActorsOfClass(this, ARaceCheckpoint::StaticClass(), Checkpoints); 
 
 	NumCheckpoints = Checkpoints.Num();

@@ -17,6 +17,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Box;
 
+	UPROPERTY(EditAnywhere)
+	float CheckPointPriority = 10.f;
+
 private:
 	UFUNCTION()
 	void HandleBoxOverlap(UPrimitiveComponent* Comp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepHit);
