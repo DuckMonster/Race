@@ -23,10 +23,11 @@ void ARaceCheckpoint::HandleBoxOverlap( UPrimitiveComponent* Comp, AActor* Other
 		if ( AICar->PassedCheckpoints.Contains(this) )
 			return;
 
+		if(AICar->Box != OtherComp)
+			return;
 		AICar->PassedCheckpoints.Add(this);
 		AICar->StatusWidget->SetCheckpointsPassed(AICar->PassedCheckpoints.Num());
 		AICar->LastCheckPoint = this;
-		CheckPointPriority -= 8.f;
 		return;
 	}
 

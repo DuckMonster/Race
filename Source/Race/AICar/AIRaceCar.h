@@ -3,13 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
+
 
 #include "GameFramework/Pawn.h"
+
+#include "Serialization/TraceReferences.h"
+
 #include "AIRaceCar.generated.h"
 
 class URacePlayerStatusWidget;
 class ARaceCheckpoint;
+class ALandscape;
 UCLASS()
 class RACE_API AAIRaceCar : public APawn {
 	GENERATED_BODY()
@@ -21,8 +29,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Box;
 
+	UPROPERTY(EditAnywhere)
+	USphereComponent* Sphere;
+
 	UPROPERTY(Category = "Car Physics", EditAnywhere)
-	float AccelerationStrength = 200.f;
+	float Force = 500.f;
 
 	UPROPERTY(Category = "Car Physics", EditAnywhere)
 	float ParallelFrictionCoefficient = 1.2f;
@@ -50,24 +61,25 @@ public:
 	ARaceCheckpoint* LastCheckPoint;
 	UPROPERTY(VisibleAnywhere)
 	ARaceCheckpoint* NextCheckPoint;
-	UPROPERTY(VisibleAnywhere)
-	FVector Direction = FVector(0.f, 0.f, 0.f);
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<ETraceTypeQuery> TraceChannel;
 
-	FVector Acceleration = FVector(0.f, 0.f, 0.f);
-	FVector Velocity = FVector(0.f, 0.f, 0.f);
+	UPROPERTY(Category = "Car Physics", EditAnywhere)
+	FVector Direction;
+	UPROPERTY(Category = "Car Physics", EditAnywhere)
+	FVector Velocity;;
+	float ThrottleInput = 1.f;
+	void FindNextCheckpoint();
+	void ResetCheckPoints();
+	void NavigationCheck( float DeltaTime );
+
 protected:
-
 	virtual void BeginPlay() override;
-	void NavigationCheck();
-	void SetDirection( float DeltaTime );
-	float Throttle = 200.f;
-
+	void SetDirection();
 	void Boost();
 	void Move( float DeltaTime );
-	void FindNextCheckpoint();
-	void AdjustTurnRight( float amount );
-	void AdjustAcceleration( float amount );
-
+	void AdjustDirection( FVector Value );
+	void AdjustThrottle( float Value, float DeltaTime );
 public:
 
 	virtual void Tick( float DeltaTime ) override;

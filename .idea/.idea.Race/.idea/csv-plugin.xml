@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\Source\Race\AICar\AIRaceCar.h">
+          <value>
+            <Attribute>
+              <option name="separator" value="&#9;" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\Source\Race\AICar\NavigationGrid.cpp">
           <value>
             <Attribute>
